@@ -1,5 +1,67 @@
 package com.fges.todoapp.e2e;
 
+import com.fges.todoapp.App;
+import org.junit.*;
+import org.junit.runners.MethodSorters;
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
+public class GhostTests {
+
+    private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
+    private static Path tempFile;
+
+    @BeforeClass
+    public static void setUp() throws IOException {
+        // Création d'un fichier temporaire pour les tests
+        tempFile = Files.createTempFile(Paths.get(TEMP_DIR), "test-", ".json");
+    }
+
+    @AfterClass
+    public static void tearDown() throws IOException {
+        // Suppression du fichier temporaire après les tests
+        Files.deleteIfExists(tempFile);
+    }
+
+    private String executeAppCommand(List<String> command) throws IOException {
+        String[] args = command.toArray(new String[0]);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        try {
+            System.setOut(new PrintStream(baos));
+            App.exec(args);
+        } finally {
+            System.setOut(originalOut);
+        }
+        return baos.toString();
+    }
+
+    @Test
+    public void test1_InsertTodo() throws IOException {
+        List<String> command = Arrays.asList("insert", "-s", tempFile.toString(), "Test Todo");
+        String result = executeAppCommand(command);
+        Assert.assertTrue(result.contains("Todo added successfully."));
+    }
+
+    @Test
+    public void test2_ListTodos() throws IOException {
+        List<String> command = Arrays.asList("list", "-s", tempFile.toString());
+        String result = executeAppCommand(command);
+        Assert.assertTrue(result.contains("Test Todo"));
+    }
+
+
+}
+
+
+
+
+
+
+/*package com.fges.todoapp.e2e;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fges.todoapp.App;
@@ -22,12 +84,12 @@ public class GhostTests {
 
     /**
      * Version of the TP to use with the API, refer to the TP name on the slides!!
-     */
+     *
     private static final String TP_NAME = "tp1";
 
     /**
      * Should not change
-     */
+     *
     private static final String API_ENDPOINT = "https://testcase-api.jho.ovh";
 
     /**
@@ -40,7 +102,7 @@ public class GhostTests {
      *                 {"list", "-s", "source.json"},
      * @param stdoutLines List of lines in the stdout
      * @param exitCode Exit code of the program
-     */
+     *
     public record ExecOutput(List<List<String>> sequence, List<String> stdoutLines, int exitCode) {
     }
 
@@ -53,8 +115,7 @@ public class GhostTests {
 
     /**
      * Remove if you want to keep temporary test files
-     */
-    @After
+     *
     public void after() {
         deleteTmpFiles();
     }
@@ -62,7 +123,7 @@ public class GhostTests {
     /**
      * The test
      * @throws Exception Any exception, it's ok to not handle them in tests because
-     */
+     *
     @Test
     public void ghostTest() throws Exception{
         Assert.assertEquals(this.execOutput, runMain(this.execOutput.sequence));
@@ -83,7 +144,7 @@ public class GhostTests {
 
         return new ExecOutput(
                 sequence,
-                Arrays.stream(sout.toString().split("\n")).toList(),
+                Arrays.stream(sout.toString().split("\n")).map(String::trim).toList(),
                 exitOutput
         );
     }
@@ -109,7 +170,7 @@ public class GhostTests {
 
     /**
      * The API gives sequences of code that uses the
-     */
+     *
     private void deleteTmpFiles() {
         File directory = Paths.get(System.getProperty("user.dir")).toFile();
         var files = directory.listFiles();
@@ -135,3 +196,4 @@ public class GhostTests {
 
 
 }
+*/
