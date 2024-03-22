@@ -1,21 +1,67 @@
 package com.fges.todoapp.model;
 
-// Modèle de données pour un todo_
+import java.time.LocalDate;
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class Todo {
-    private String name;
 
-    /* Constructeur qui initialise le nom du todos avec la valeur passée en paramètre*/
-    public Todo(String todoName) {
-        this.name = todoName;
+    private static final AtomicInteger ID_GENERATOR = new AtomicInteger(0); // Génère un ID unique
+    private final int id;
+    private String description;
+    private boolean done;
+    private LocalDate dueDate; // Ajoute une date d'échéance optionnelle
+
+    // Le constructeur sans arguments n'est plus nécessaire si nous utilisons des constructeurs avec paramètres
+
+    public Todo(String description, boolean done) {
+        this.id = ID_GENERATOR.incrementAndGet(); // Assigner un nouvel ID
+        this.description = description;
+        this.done = done;
     }
 
-    // Getter pour obtenir le nom du todo_
-    public String getName() {
-        return name;
+    // Ajout d'un constructeur avec une date d'échéance
+    public Todo(String description, boolean done, LocalDate dueDate) {
+        this(description, done);
+        this.dueDate = dueDate;
     }
 
-    // Si nécessaire, vous pouvez également ajouter un setter pour le nom
-    public void setName(String name) {
-        this.name = name;
+    public int getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
+
+    // Getter et Setter pour dueDate
+    public Optional<LocalDate> getDueDate() {
+        return Optional.ofNullable(dueDate);
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    // Surcharge de toString pour une représentation de l'objet plus utile en mode texte
+    @Override
+    public String toString() {
+        return "Todo{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                ", done=" + done +
+                ", dueDate=" + dueDate +
+                '}';
     }
 }
